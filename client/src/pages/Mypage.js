@@ -1,19 +1,16 @@
 import React from "react";
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import styled, { css } from "styled-components";
+import { useState } from "react";
+
+import styled from "styled-components";
 import PasswordModal from "../components/PasswordModal";
 import WithdrawalModal from "../components/WithdrawalModal";
 import axios from "axios";
-import mypage from "../images/mypage.png";
-import profile from "../images/vegetable.jpeg";
 import lock from "../images/locked.png";
 import cancel from "../images/cancel.png";
 import editImg from "../images/edit.png";
 import complete from "../images/complete.png";
 import Swal from "sweetalert2";
 import DaumPostcode from "react-daum-postcode";
-import ModalContainer from "../components/PasswordModal";
 
 const ModalBackground = styled.div`
   width: 100%;
@@ -26,7 +23,7 @@ const ModalBackground = styled.div`
 `;
 const StMypageHead = styled.div`
   width: 100%;
-  padding-bottom: 200px;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -59,6 +56,7 @@ const StMypageHead = styled.div`
       .mypage-profile-box {
         width: 40%;
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         .profile-img {
@@ -252,11 +250,14 @@ const StMypageHead = styled.div`
         margin-top: 20px;
         height: 100%;
         width: 70%;
-        border-top: dashed 1px gray;
-        border-bottom: dotted 1px gray;
+        border-top: solid 1px #b7b7b7;
+        border-bottom: solid 1px #b7b7b7;
         display: flex;
         justify-content: center;
         align-items: center;
+        @media all and (max-width: 768px) {
+          width: 90%;
+        }
         .category-align {
           height: 100%;
           width: 100%;
@@ -282,44 +283,160 @@ const StMypageHead = styled.div`
             display: flex;
             justify-content: center;
             align-items: center;
-            .category-button {
+            /* .category-button {
               font-size: 9px;
               width: 80%;
               height: 60%;
-              background: #aae8c5;
+              /* background: #d1d1d1; */
               border-radius: 15px;
               border: 1px gray;
               cursor: pointer;
+              &:focus {
+                background: #aae8c5;
+              }
               @media all and (max-width: 768px) {
                 height: 70%;
                 width: 90%;
                 font-size: 6px;
               }
-            }
+            } */
           }
         }
       }
     }
-    .content-wrap {
+
+    .content-head {
       width: 100%;
       height: 60%;
       display: flex;
+      align-items: center;
+      justify-content: center;
+      .content-wrap {
+        margin-top: 30px;
+        width: 60%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        @media all and (max-width: 768px) {
+          width: 90%;
+        }
+      }
+    }
+  }
+`;
+const StContent = styled.div`
+  background: white;
+  width: 60%;
+  height: 100px;
+  border-radius: 15px;
+  border: 1px solid #aae8c5;
+  @media all and (max-width: 768px) {
+    width: 90%;
+  }
+  &:hover {
+    cursor: pointer;
+    box-shadow: gray 3px 3px 3px;
+  }
+  &:active {
+    box-shadow: none;
+  }
+  .title-tick {
+    width: 100%;
+    height: 25%;
+    margin-top: 2px;
+    margin-left: 5px;
+    .title {
+      text-align: center;
+      display: flex;
       justify-content: center;
       align-items: center;
+      font-size: 12px;
+      font-weight: bold;
+      border-radius: 15px;
+      background: #aae8c5;
+      width: 50px;
+      height: 100%;
     }
+  }
+  .content-tick {
+    height: 35%;
+    width: 100%;
+    margin-left: 10px;
+    .content {
+      font-size: 11px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+  }
+  .address-tick {
+    height: 20%;
+    width: 100%;
+    display: flex;
+    margin-left: 10px;
+    .address-area {
+      font-size: 9px;
+      color: gray;
+      display: flex;
+      width: 50%;
+      .nickname {
+        margin-right: 5px;
+      }
+    }
+    .data-area {
+      font-size: 9px;
+      color: gray;
+      width: 50%;
+      display: flex;
+      justify-content: end;
+      margin-right: 20px;
+    }
+  }
+  .comment-tick {
+    height: 20%;
+    width: 100%;
+    display: flex;
+    margin-left: 10px;
+    .comment-area {
+      display: flex;
+      font-size: 9px;
+      color: gray;
+      .views {
+        margin-right: 5px;
+      }
+    }
+  }
+`;
+
+const StCategoryButton = styled.button.attrs((props) => ({
+  type: "button",
+}))`
+  background: ${(props) => (props.select ? "#92E3A9" : "#EFEFEF")};
+  font-size: 9px;
+  width: 80%;
+  height: 60%;
+  border-radius: 15px;
+  border: 1px gray;
+  cursor: pointer;
+  @media all and (max-width: 768px) {
+    height: 70%;
+    width: 90%;
+    font-size: 6px;
   }
 `;
 
 export default function Mypage({ login, userinfo }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalOpen2, setModalOpen2] = useState(false);
-  const [modalOpen3, setModalOpen3] = useState(false);
-
+  const [category, setCategory] = useState({ number: null });
   const [edit, setEdit] = useState(true);
   const [editInfo, setEditInfo] = useState({
-    img: "",
-    nickname: "",
-    address: "",
+    img: userinfo.img,
+    nickname: userinfo.nickname,
+    address: userinfo.address,
+    town: userinfo.town,
   });
   const [duplicate, setDuplicate] = useState({
     nickname: false,
@@ -329,11 +446,6 @@ export default function Mypage({ login, userinfo }) {
     setEditInfo({ ...editInfo, [key]: e.target.value });
   };
 
-  // const [userInfo, setUserInfo] = useState({
-  //   nickname: nickname,
-  //   email: email,
-  //   address: address,
-  // });
   console.log(editInfo);
   const onCloseModal = (e) => {
     if (e.target === e.currentTarget) {
@@ -369,6 +481,7 @@ export default function Mypage({ login, userinfo }) {
       })
       .then((res) => {
         setDuplicate(true);
+
         Swal.fire({
           icon: "success",
           title: "사용 가능한 닉네임입니다",
@@ -385,6 +498,7 @@ export default function Mypage({ login, userinfo }) {
         });
       });
   };
+  //수정 요청
   const submitEditInfo = () => {
     if (duplicate === true) {
       axios
@@ -393,7 +507,7 @@ export default function Mypage({ login, userinfo }) {
           address: editInfo.address,
         })
         .then((res) => {
-          setEditInfo(res.data);
+          setEdit(true);
         });
     } else {
       Swal.fire({
@@ -431,7 +545,7 @@ export default function Mypage({ login, userinfo }) {
     top: "50%",
     left: "50%",
     width: "400px",
-    height: "500px",
+    height: "400px",
     transform: "translate(-50%, -50%)",
     padding: "7px",
   };
@@ -439,6 +553,11 @@ export default function Mypage({ login, userinfo }) {
   const postThemeStyle = {
     bgColor: "#D6FFEA",
     outlineColor: "#222222",
+  };
+
+  // 카테고리 변경하는 함수
+  const changeCategory = (e) => {
+    setCategory({ ...category, number: Number(e.target.value) });
   };
 
   return (
@@ -449,7 +568,7 @@ export default function Mypage({ login, userinfo }) {
             //기존 상태
             <div className={"mypage-wrap"}>
               <div className={"mypage-profile-box"}>
-                <img src={profile} className={"profile-img"}></img>
+                <img src={editInfo.img} className={"profile-img"}></img>
               </div>
               <div className={"mypage-userinfo-box"}>
                 <div className={"edit-wrap"}>
@@ -474,7 +593,7 @@ export default function Mypage({ login, userinfo }) {
                   ></input> */}
                       <div className={"input-area"}>
                         <div className={"userinfo-contents"}>
-                          {userinfo.nickname}
+                          {editInfo.nickname}
                         </div>
                       </div>
                     </div>
@@ -504,7 +623,7 @@ export default function Mypage({ login, userinfo }) {
                   ></input> */}
                       <div className={"input-area"}>
                         <div className={"userinfo-contents"}>
-                          {userinfo.address}
+                          {editInfo.address}
                         </div>
                       </div>
                     </div>
@@ -516,7 +635,8 @@ export default function Mypage({ login, userinfo }) {
             //편집 상태
             <div className={"mypage-wrap"}>
               <div className={"mypage-profile-box"}>
-                <img src={profile} className={"profile-img"}></img>
+                <img src={editInfo.img} className={"profile-img"}></img>
+                <button>사진 변경</button>
               </div>
               <div className={"mypage-userinfo-box"}>
                 <div className={"edit-wrap"}>
@@ -538,7 +658,7 @@ export default function Mypage({ login, userinfo }) {
                       <input
                         type="text"
                         className={"input-area edit"}
-                        defaultValue={userinfo.nickname}
+                        defaultValue={editInfo.nickname}
                         onChange={handleInputValue("nickname")}
                       ></input>
                       <div className={"dupicate-wrap"}>
@@ -568,9 +688,8 @@ export default function Mypage({ login, userinfo }) {
                     <div className={"input-tick"}>
                       <input
                         className={"input-area"}
-                        value={userinfo.address}
+                        value={editInfo.address}
                         onFocus={() => isOpenPost(true)}
-                        onChange={handleInputValue("address")}
                       ></input>
                       {openPost && (
                         <ModalBackground onClick={() => modalClose3()}>
@@ -619,31 +738,94 @@ export default function Mypage({ login, userinfo }) {
               <div className={"category-align"}>
                 <div className={"category-half"}>
                   <div className={"category-tick"}>
-                    <button className={"category-button"}>내 게시글</button>
+                    <StCategoryButton
+                      value={1}
+                      onClick={(e) => changeCategory(e)}
+                      select={category.number === 1 ? true : false}
+                    >
+                      내 게시글
+                    </StCategoryButton>
                   </div>
                   <div className={"category-tick"}>
-                    <button className={"category-button"}>내 동네소식</button>
+                    <StCategoryButton
+                      value={2}
+                      onClick={(e) => changeCategory(e)}
+                      select={category.number === 2 ? true : false}
+                    >
+                      내 동네소식
+                    </StCategoryButton>
                   </div>
                   <div className={"category-tick"}>
-                    <button className={"category-button"}>판매내역</button>
+                    <StCategoryButton
+                      value={3}
+                      onClick={(e) => changeCategory(e)}
+                      select={category.number === 3 ? true : false}
+                    >
+                      판매내역
+                    </StCategoryButton>
                   </div>
                 </div>
                 <div className={"category-half"}>
                   <div className={"category-tick"}>
-                    <button className={"category-button"}>구매내역</button>
+                    <StCategoryButton
+                      value={4}
+                      onClick={(e) => changeCategory(e)}
+                      select={category.number === 4 ? true : false}
+                    >
+                      구매내역
+                    </StCategoryButton>
                   </div>
                   <div className={"category-tick"}>
-                    <button className={"category-button"}>찜한 게시글</button>
+                    <StCategoryButton
+                      value={5}
+                      onClick={(e) => changeCategory(e)}
+                      select={category.number === 5 ? true : false}
+                    >
+                      찜한 게시글
+                    </StCategoryButton>
                   </div>
                   <div className={"category-tick"}>
-                    <button className={"category-button"}>관심 소식</button>
+                    <StCategoryButton
+                      value={6}
+                      onClick={(e) => changeCategory(e)}
+                      select={category.number === 6 ? true : false}
+                    >
+                      관심 소식
+                    </StCategoryButton>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className={"content-wrap"}>
-            <div>게시글</div>
+          <div className={"content-head"}>
+            <div className={"content-wrap"}>
+              <StContent>
+                <div className={"title-tick"}>
+                  <div className={"title"}>
+                    <div>질문</div>
+                  </div>
+                </div>
+                <div className={"content-tick"}>
+                  <div className={"content"}>
+                    <div>내용</div>
+                  </div>
+                </div>
+                <div className={"address-tick"}>
+                  <div className={"address-area"}>
+                    <div className={"nickname"}>닉네임</div>
+                    <div className={"town"}>동네</div>
+                  </div>
+                  <div className={"data-area"}>1달 전</div>
+                </div>
+                <div className={"comment-tick"}>
+                  <div className={"comment-area"}>
+                    {" "}
+                    <div className={"views"}>조회수</div>
+                    <div className={"comment"}>댓글</div>
+                  </div>
+                </div>
+              </StContent>
+            </div>
           </div>
         </div>
       </div>

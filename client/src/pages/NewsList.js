@@ -1,25 +1,29 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
   faSearch,
   faPlusSquare,
+  faPlusCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
-import Swal from "sweetalert2";
 import axios from "axios";
 import styled from "styled-components";
+import News from "./../components/News";
+import Loading from "./../components/Loading";
+import NoData from "./../components/NoData";
 axios.defaults.withCredentials = true;
 
 const StBodyDiv = styled.div`
   width: 100%;
   height: 100%;
+  min-height: 900px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 50px; // 푸터 내리기
   overflow-y: auto;
+  margin-bottom: 40px;
   .category {
     display: flex;
     flex-wrap: wrap;
@@ -27,9 +31,7 @@ const StBodyDiv = styled.div`
   }
 `;
 
-const StCategoryButton = styled.button.attrs((props) => ({
-  type: "button",
-}))`
+const StCategoryButton = styled.button`
   background: ${(props) => (props.select ? "#92E3A9" : "#EFEFEF")};
   cursor: pointer;
   border-radius: 10px;
@@ -45,28 +47,61 @@ const StCategoryButton = styled.button.attrs((props) => ({
 const StContentsHeadDiv = styled.div`
   margin: 10px 0 10px 0;
   width: 70%;
-  .head-oneLine {
-    display: flex;
-    justify-content: space-between;
-    .myAddress {
-      display: flex;
-    }
-    input {
-      border-radius: 10px;
-    }
-  }
-  .head-twoLine {
+  .write-post {
     display: flex;
     justify-content: flex-end;
     margin-top: 10px;
-    .write-post {
+    width: 100%;
+    .write-button {
       margin-top: 10px;
       color: #92e3a9;
+      font-size: 1.5em;
+    }
+  }
+  @media all and (min-width: 1440px) {
+    max-width: 990px;
+  }
+`;
+
+const StAddressSearchDiv = styled.div`
+  display: flex;
+  justify-content: ${(props) => (props.login ? "space-between" : "flex-end")};
+  .myAddress {
+    display: flex;
+    svg {
+      color: #92e3a9;
+    }
+    div {
+      margin-left: 5px;
+      font-weight: bold;
+      font-size: 1.5em;
+    }
+  }
+  input {
+    border-radius: 10px;
+    height: 20px;
+  }
+  @media all and (max-width: 425px) {
+    .myAddress {
+      svg {
+        font-size: 1em;
+      }
+      div {
+        font-size: 1em;
+      }
+    }
+    input {
+      height: 15px;
     }
   }
 `;
 
-const StContentsBodyDiv = styled.div``;
+const StContentsBodyDiv = styled.div`
+  width: 70%;
+  @media all and (min-width: 1440px) {
+    max-width: 990px;
+  }
+`;
 
 export default function NewsList({ userinfo, login }) {
   //! 해야하는 부분
@@ -78,40 +113,58 @@ export default function NewsList({ userinfo, login }) {
   //? 글쓰는 버튼 누르면 글쓰는 페이지로 이동하기 (로그인한 유저만)
   //? 게시글 하나 누르면 상세게시글페이지로 이동하기
   const [newsList, setNewsList] = useState([]);
-  const [category, setCategory] = useState({ number: null });
+  const [category, setCategory] = useState({ number: 0 });
   const [page, setPage] = useState(1);
   const [loading, isLoading] = useState(true);
   const [fetch, isFetch] = useState(false);
+  const navigate = useNavigate();
 
   // 카테고리 변경하는 함수
   const changeCategory = (e) => {
-    setCategory({ ...category, number: Number(e.target.value) });
+    if (Number(e.target.value) === category.number) {
+      setCategory({ ...category, number: 0 });
+      navigate("/news=0");
+    } else {
+      setCategory({ ...category, number: Number(e.target.value) });
+      navigate(`/news=${e.target.value}`);
+    }
+    setNewsList([]);
     setPage(1);
   };
 
   // 서버로 데이터를 요청하는 함수
-  const requestNews = () => {
+  const requestNews = async () => {
     isLoading(true);
     isFetch(true);
     if (category.number) {
-      axios
-        .get(`${process.env.REACT_APP_API_URL}/news/list/${category}/${page}`)
+      await axios
+        .get(
+          `${process.env.REACT_APP_API_URL}/news/list/${category.number}?page=${page}`
+        )
         .then((res) => {
-          isLoading(false);
-          isFetch(false);
-        }) // newsList 업데이트하기
-        .catch(); // 에러 핸들링
+          const mergeData = newsList.concat(...res.data.data);
+          setTimeout(() => {
+            setNewsList(mergeData);
+            setPage((preState) => preState + 1);
+            isLoading(false);
+            isFetch(false);
+          }, 1000);
+        })
+        .catch();
     } else {
-      axios
-        .get(`${process.env.REACT_APP_API_URL}/news/list/${page}`)
+      await axios
+        .get(`${process.env.REACT_APP_API_URL}/news/list?page=${page}`)
         .then((res) => {
-          isLoading(false);
-          isFetch(false);
+          const mergeData = newsList.concat(...res.data.data);
+          setTimeout(() => {
+            setNewsList(mergeData);
+            setPage((preState) => preState + 1);
+            isLoading(false);
+            isFetch(false);
+          }, 1000);
         })
         .catch();
     }
-    isLoading(false);
-    setPage(page + 1);
   };
 
   // 스크롤 이벤트 함수
@@ -119,8 +172,6 @@ export default function NewsList({ userinfo, login }) {
     const scrollHeight = document.documentElement.scrollHeight;
     const scrollTop = document.documentElement.scrollTop;
     const clientHeight = document.documentElement.clientHeight;
-    console.log("!!!", scrollTop + clientHeight);
-    console.log("???", scrollHeight);
     if (scrollTop + clientHeight >= scrollHeight && !fetch) {
       requestNews();
     }
@@ -128,11 +179,22 @@ export default function NewsList({ userinfo, login }) {
 
   useEffect(() => {
     requestNews();
+  }, [category]);
+
+  useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  });
+
+  const presentState = () => {
+    console.log("newsList", newsList);
+    console.log("category", category);
+    console.log("page", page);
+    console.log("loading", loading);
+    console.log("fetch", fetch);
+  };
 
   return (
     <StBodyDiv>
@@ -209,65 +271,36 @@ export default function NewsList({ userinfo, login }) {
         </StCategoryButton>
       </div>
       <StContentsHeadDiv>
-        <div class="head-oneLine">
+        <StAddressSearchDiv login={login}>
           {login ? (
             <div class="myAddress">
-              <FontAwesomeIcon icon={faCheck}></FontAwesomeIcon>
-              <div>{userinfo.address.split(",")[2]}</div>
+              <FontAwesomeIcon icon={faCheck} size={"2x"}></FontAwesomeIcon>
+              <div>{userinfo.town.split(",")[1]}</div>
             </div>
           ) : null}
           <div>
             <input type={"text"} placeholder={"검색"}></input>
             <FontAwesomeIcon icon={faSearch}></FontAwesomeIcon>
           </div>
-        </div>
+        </StAddressSearchDiv>
         {login ? (
-          <Link to="/" class="head-twoLine">
-            <FontAwesomeIcon
-              className={"write-post"}
-              icon={faPlusSquare}
-            ></FontAwesomeIcon>
-          </Link>
+          <div class="write-post">
+            <Link to="/">
+              <FontAwesomeIcon
+                className={"write-button"}
+                icon={faPlusSquare}
+              ></FontAwesomeIcon>
+            </Link>
+          </div>
         ) : null}
       </StContentsHeadDiv>
-      <button onClick={requestNews}>123</button>
       <StContentsBodyDiv>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
-        <div>asdf</div>
+        {newsList.map((news, index) => (
+          <News news={news} key={index} />
+        ))}
       </StContentsBodyDiv>
+      {loading ? <Loading /> : null}
+      {!loading && newsList.length === 0 ? <NoData /> : null}
     </StBodyDiv>
   );
 }

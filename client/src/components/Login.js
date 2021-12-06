@@ -162,9 +162,7 @@ export default function Login({
           // 로그인 성공
           isLoginModal(false);
           handleLoginSuccess();
-
           navigate("/");
-
         })
         .catch(() => {
           Swal.fire({

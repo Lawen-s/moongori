@@ -23,6 +23,7 @@ module.exports = async (req, res) => {
           "reliability",
           "createdAt",
           "updatedAt",
+          "town",
         ],
       });
       return res.status(200).json({ data: userInfo });

@@ -2,7 +2,6 @@ const { user } = require("../../models");
 const { verify, sign } = require("jsonwebtoken");
 
 module.exports = async (req, res) => {
-  console.log(`########`, req.cookies.id);
   const id = req.cookies.id;
   const { nickname, address } = req.body;
   //const imgs = req.files
@@ -10,10 +9,7 @@ module.exports = async (req, res) => {
 
   try {
     if (nickname) {
-      await user.update(
-        { nickname: nickname },
-        { where: { id: id } }
-      );
+      await user.update({ nickname: nickname }, { where: { id: id } });
     }
     if (address) {
       await user.update({ address: address }, { where: { id: id } });
@@ -53,5 +49,4 @@ module.exports = async (req, res) => {
     console.log(err);
     return res.status(500).json({ message: err });
   }
-
 };

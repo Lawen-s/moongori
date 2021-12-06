@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const userCtrl = require("./user/userCtrl");
 const newsPostCtrl = require("./newsPost/newsPostCtrl");
-const auth = require("./auth/accessToken")
+const tradePost = require("./tradePost/tradePostCtrl");
+const auth = require("./auth/accessToken");
 
 //user
 router.get("/user/info", auth.accessToken, userCtrl.info);
@@ -27,18 +28,22 @@ router.get("/cert/:email", userCtrl.cert);
 //newsPost
 router.get("/news/list", newsPostCtrl.list);
 router.get("/news/list/:category", newsPostCtrl.category);
-//
 router.get("/news/post/:id", auth.accessToken, newsPostCtrl.read);
-router.post("/news/post", newsPostCtrl.write);
-router.delete("/news/post/:id", newsPostCtrl.withdrawal);
-router.patch("/news/post/:id", newsPostCtrl.modification);
-router.post("/news/comment", newsPostCtrl.writeComment);
-router.patch("/news/comment/:id", newsPostCtrl.modifyComment);
-router.delete("/news/comment/:id", newsPostCtrl.withdrawalComment);
-
-router.patch("/auth", auth.accessToken, userCtrl.modifyUser);
+router.post("/news/post", auth.accessToken, newsPostCtrl.write);
+router.delete("/news/post/:id", auth.accessToken, newsPostCtrl.withdrawal);
+router.patch("/news/post/:id", auth.accessToken, newsPostCtrl.modification);
+router.post("/news/comment", auth.accessToken, newsPostCtrl.writeComment);
+router.patch("/news/comment/:id", auth.accessToken, newsPostCtrl.modifyComment);
+router.delete(
+    "/news/comment/:id",
+    auth.accessToken,
+    newsPostCtrl.withdrawalComment
+);
+router.get("/news/mylist", auth.accessToken, newsPostCtrl.myList);
 
 //tradePost
-router.get("/trade/list",)
+router.get("trade/list", tradePost.list);
+// router.get("trade/list/:nomalOrNot", tradePost.nomalOrNot);
+// router.get("trade/post/:id", tradePost.read);
 
 module.exports = router;

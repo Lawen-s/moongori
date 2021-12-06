@@ -18,17 +18,5 @@ exports.accessToken = async (req, res, next) => {
     }
     req.cookies.id = userInfo.id;
     next();
-    // delete userInfo.dataValues.password;
-    // delete userInfo.dataValues.salt;
-    // const payload = userInfo.dataValues;
-    // const token = await sign(payload, process.env.ACCESS_SECRET, {
-    //   expiresIn: "1d",
-    // });
-    // res.status(200).cookie("accesstoken", token, {
-    //   sameSite: "None",
-    //   httpOnly: true,
-    //   secure: true,
-    // }).json({ message: "new cookie" });
-  }
-  )
-}
+  });
+};
