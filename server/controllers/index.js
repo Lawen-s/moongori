@@ -37,6 +37,8 @@ router.patch("/news/comment/:id", newsPostCtrl.modifyComment);
 router.delete("/news/comment/:id", newsPostCtrl.withdrawalComment);
 
 router.patch("/auth", auth.accessToken, userCtrl.modifyUser);
+
 //tradePost
+router.get("/trade/list",)
 
 module.exports = router;
