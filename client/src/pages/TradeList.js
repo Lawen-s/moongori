@@ -215,7 +215,7 @@ export default function TradeList({ login, userinfo }) {
   };
 
   useEffect(() => {
-    console.log("trade")
+    console.log("여기는 중고거래")
     if (userinfo.address === null) {
       navigate("/mypage");
     } else {

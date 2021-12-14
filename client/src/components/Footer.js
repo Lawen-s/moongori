@@ -3,6 +3,7 @@ import styled from "styled-components";
 import logoWhite from "./../images/흰색 로고.png";
 
 const FooterBox = styled.div`
+
   background-color: #777777;
   color: #ffffff;
   position: relative;

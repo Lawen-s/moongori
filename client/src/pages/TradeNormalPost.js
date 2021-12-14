@@ -29,7 +29,7 @@ const StTradeBodyDiv = styled.div`
   flex-direction: column;
   align-items: center;
   overflow-y: auto;
-  margin-bottom: 200px;
+  margin-bottom: 250px;
   .explain-wrap {
     max-width: 1000px;
     padding: ${(props) => (props.eidt ? "none" : "10px")};
@@ -93,8 +93,9 @@ const StPictureDiv = styled.div`
   }
 `;
 const StContentDiv = styled.div`
+margin-top:70px;
   width: 50%;
-  height: 70%;
+  height: 80%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -108,6 +109,7 @@ const StContentDiv = styled.div`
     align-items: center;
   }
   .content-wrap {
+    
     width: 100%;
     height: 100%;
     @media all and (max-width: 768px) {
@@ -157,6 +159,7 @@ const StContentDiv = styled.div`
     }
   }
   .content-body {
+   
     width: 100%;
     height: 30%;
     margin-bottom: 20px;
@@ -230,6 +233,7 @@ const StContentDiv = styled.div`
     }
   }
   .StContactButton {
+   
     width: 100%;
     display: flex;
     justify-content: center;

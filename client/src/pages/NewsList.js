@@ -216,7 +216,6 @@ export default function NewsList({ userinfo, login }) {
               setPage((preState) => preState + 1);
               isLoading(false);
               isFetch(false);
-              // setTimeout(() => {}, 1000);
             }
           })
           .catch();
@@ -251,7 +250,6 @@ export default function NewsList({ userinfo, login }) {
               setPage((preState) => preState + 1);
               isLoading(false);
               isFetch(false);
-              // setTimeout(() => {}, 1000);
             }
           })
           .catch();
@@ -270,7 +268,7 @@ export default function NewsList({ userinfo, login }) {
   };
 
   useEffect(() => {
-    console.log("news")
+    console.log("여기는 동네소식")
     if (userinfo.address === null) {
       navigate("/mypage");
     } else {

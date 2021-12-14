@@ -93,9 +93,10 @@ const StPictureDiv = styled.div`
   }
 `;
 const StContentDiv = styled.div`
+margin-top:80px;
   margin-left: 20px;
   width: 40%;
-  height: 70%;
+  height: 90%;
   display: flex;
   flex-direction: column;
   align-items: center;

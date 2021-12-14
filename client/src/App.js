@@ -66,7 +66,7 @@ export default function App() {
   }
 
   useEffect(() => {
-    console.log("here")
+    console.log("여기는 APP")
     isAuthenticated();
   }, []);
 
