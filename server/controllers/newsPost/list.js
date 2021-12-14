@@ -8,14 +8,11 @@ module.exports = async (req, res) => {
   const page = req.query.page;
   let offset = 0;
   try {
-
     if (page > 1) {
       offset = 10 * (page - 1);
     }
 
     const allPostCount = await newsPost.count();
-    console.log(`#####`, allPostCount);
-    console.log(`#####`, cookie);
     if (offset >= allPostCount) {
       return res.status(204).json({ message: "no more data" });
     }
@@ -48,6 +45,6 @@ module.exports = async (req, res) => {
       });
     }
   } catch (err) {
-    return res.status(500).json({ data: err, message: 'error' });
+    return res.status(500).json({ data: err, message: "error" });
   }
 };

@@ -242,6 +242,7 @@ export default function NewsList({ userinfo, login }) {
         await axios
           .get(`${process.env.REACT_APP_API_URL}/news/list?page=${page}`)
           .then((res) => {
+            console.log(res);
             if (res.status === 204) {
               isLoading(false);
             } else {
@@ -268,7 +269,6 @@ export default function NewsList({ userinfo, login }) {
   };
 
   useEffect(() => {
-    console.log("여기는 동네소식")
     if (userinfo.address === null) {
       navigate("/mypage");
     } else {

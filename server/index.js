@@ -14,7 +14,7 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.static(__dirname + '/src'));
+
 app.set("etag", false);
 app.use("/", controllers);
 app.get("/", (req, res) => {

@@ -64,7 +64,7 @@ const StTradeBoxDiv = styled.div`
   justify-content: center;
   @media all and (min-width: 2000px) {
     width: 50%;
-    height: 650px;
+    height: 500px;
   }
   @media all and (max-width: 1024px) {
     width: 80%;

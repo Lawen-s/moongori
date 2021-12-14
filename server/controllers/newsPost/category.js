@@ -14,6 +14,7 @@ module.exports = async (req, res) => {
       offset = 10 * (page - 1);
     }
     const allPostCount = await newsPost.count({ where: { category: category } });
+
     if (offset >= allPostCount) {
       return res.status(204).json({ message: "no more data" });
     }
