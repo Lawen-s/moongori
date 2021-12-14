@@ -39,7 +39,7 @@ export const StContentInfoDiv = styled.div`
   margin-bottom: ${(props) =>
     props.top ? (props.mypage ? "15px" : "10px") : "0px"};
   font-size: ${(props) =>
-    props.top ? (props.mypage ? "1em" : "1.2em") : "0.8em"};
+    props.top ? (props.mypage ? "1em" : "1em") : "0.8em"};
   .front {
     margin-right: 20px;
   }
@@ -58,6 +58,7 @@ const StCategoryDiv = styled.div`
   height: 25px;
   text-align: center;
   margin-bottom: 10px;
+  font-size: 0.8em;
 `;
 
 export const category = {
