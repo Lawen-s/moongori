@@ -14,6 +14,8 @@ module.exports = async (req, res) => {
     }
 
     const allPostCount = await newsPost.count();
+    console.log(`#####`, allPostCount);
+    console.log(`#####`, cookie);
     if (offset >= allPostCount) {
       return res.status(204).json({ message: "no more data" });
     }
